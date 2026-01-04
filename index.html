@@ -333,8 +333,8 @@ LuaPlayerYT 0.5 beta 3 — документация основаная на LuaP
 <p><code>System.isFile(path?) → boolean</code></p>
 <p><code>System.isDir(path?) → boolean</code></p>
 <p><code>System.listDir(path?) → table</code></p>
-<p><code>System.OSK(...) → string</code></p>
-<p><code>System.message(...)</code></p>
+<p><code>System.OSK(text, desc, cleanBG, bgpath) → string</code></p>
+<p><code>System.message(message, mode, cleanBG, bgpath)</code></p>
 <p><code>System.getBatteryPercent()</code></p>
 <p><code>System.getBatteryLifeTime()</code></p>
 <p><code>System.getCPU()</code></p>
@@ -343,11 +343,11 @@ LuaPlayerYT 0.5 beta 3 — документация основаная на LuaP
 <p><code>System.getOSV()</code></p>
 <p><code>System.getNickname()</code></p>
 <p><code>System.getLang()</code></p>
-<p><code>System.SaveData(...) → string</code></p>
-<p><code>System.LoadData(...) → table|nil</code></p>
-<p><code>System.DeleteData(...)</code></p>
-<p><code>System.AutoSave(...)</code></p>
-<p><code>System.AutoLoad(...)</code></p>
+<p><code>System.SaveData(saveData, subTitle, description, ebootpath, icon0path, cleanBG, bgpath) → string</code></p>
+<p><code>System.LoadData(cleanBG, bgpath) → table|nil</code></p>
+<p><code>System.DeleteData(cleanBG, bgpath)</code></p>
+<p><code>System.AutoSave(saveData, subTitle, description, ebootpath, AutoSaveFolder, icon0path)</code></p>
+<p><code>System.AutoLoad(AutoSaveFolder)</code></p>
 <p><code>System.USB.activate()</code></p>
 <p><code>System.USB.deactivate()</code></p>
 <p><code>System.USB.getState()</code></p>
