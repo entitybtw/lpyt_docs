@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lpyt docs</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#0f1115;
+--panel:#161a22;
+--text:#e6e6eb;
+--muted:#9aa0aa;
+--accent:#7c7cff;
+--border:#232837;
+}
+[data-theme="light"]{
+--bg:#f6f7fb;
+--panel:#ffffff;
+--text:#0f1115;
+--muted:#5a5f6a;
+--accent:#5b5bff;
+--border:#e3e6ef;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Inter,system-ui;
+background:var(--bg);
+color:var(--text);
+display:flex;
+}
+aside{
+width:260px;
+background:var(--panel);
+border-right:1px solid var(--border);
+padding:24px;
+position:fixed;
+height:100vh;
+overflow:auto;
+}
+aside h1{
+font-size:22px;
+font-weight:800;
+margin:0 0 24px 0;
+}
+.nav button{
+display:block;
+width:100%;
+text-align:left;
+background:none;
+border:none;
+color:var(--muted);
+font-size:16px;
+margin-bottom:10px;
+cursor:pointer;
+}
+.nav button.active,
+.nav button:hover{color:var(--accent)}
+.subnav{
+margin-left:12px;
+margin-top:6px;
+display:none;
+}
+.subnav button{
+font-size:14px;
+margin-bottom:8px;
+}
+.theme{margin-top:32px}
+.theme button{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:1px solid var(--border);
+background:var(--bg);
+color:var(--text);
+cursor:pointer;
+}
+main{
+margin-left:260px;
+padding:48px;
+max-width:1000px;
+}
+section{display:none}
+section.active{display:block}
+h2{font-size:32px;margin-bottom:12px}
+h3{margin-top:32px}
+h4{margin-top:20px}
+p{line-height:1.7;color:var(--muted)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{
+background:var(--bg);
+border:1px solid var(--border);
+border-radius:8px;
+}
+pre{padding:16px;overflow:auto}
+code{padding:2px 6px}
+details{
+border:1px solid var(--border);
+border-radius:10px;
+padding:14px;
+margin-bottom:16px;
+background:var(--panel);
+}
+summary{
+cursor:pointer;
+font-weight:600;
+color:var(--accent);
+}
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:12px;
+}
+th,td{
+border:1px solid var(--border);
+padding:8px;
+text-align:left;
+}
+th{background:var(--bg)}
+</style>
+</head>
+<body>
+
+<aside>
+<h1>LuaPlayerYT</h1>
+
+<div class="nav">
+<button data-tab="intro">Основная информация</button>
+<button data-tab="build">Сборка</button>
+
+<button data-tab="docs" id="docsTab">Документация движка</button>
+<div class="subnav" id="docsSubnav">
+<button data-doc="buttons">buttons</button>
+<button data-doc="color">Color</button>
+<button data-doc="image">Image</button>
+<button data-doc="intrafont">intraFont</button>
+<button data-doc="system">System</button>
+<button data-doc="screen">screen</button>
+<button data-doc="sound">sound</button>
+<button data-doc="pmp">PMP</button>
+<button data-doc="lua">LUA</button>
+<button data-doc="timer">timer</button>
+</div>
+
+<button data-tab="additional">Дополнительная информация</button>
+</div>
+
+<div class="theme">
+<button id="themeToggle">🌙 / ☀️</button>
+</div>
+</aside>
+
+<main>
+<section id="intro">
+<h2>Основная информация</h2>
+<p>
+LuaPlayerYT — современный LuaPlayer для PSP с открытым исходным кодом,
+ориентированный на расширяемость и широкий функционал.
+</p>
+
+<h3>Репозитории</h3>
+<p>
+Основной репозиторий →
+<a href="https://github.com/antim0118/LuaPlayer-by-YuliaTeam" target="_blank">
+github.com/antim0118/LuaPlayer-by-YuliaTeam
+</a>
+</p>
+
+<h3>Форки</h3>
+<p>
+1. Форк движка от entitybtw, ориентированный на кастомизацию.
+Создается для порта Minecraft: Story Mode для PSP [mcsm_portable].
+Форк сохраняет все оригинальные ассеты и добавляет гибкую настройку
+экрана ошибок (звук, шрифт, изображение), для сборки используется скрипт build.sh.
+</p>
+<p>
+Репозиторий →
+<a href="https://github.com/entitybtw/LuaPlayerYT-MCSM" target="_blank">
+github.com/entitybtw/LuaPlayerYT-MCSM
+</a>
+</p>
+</section>
+
+<section id="build">
+<h2>Сборка</h2>
+
+<h3>Основной репозиторий</h3>
+
+<p>
+1. Установите PSPSDK согласно
+<a href="https://pspdev.github.io/installation.html" target="_blank">
+официальной инструкции
+</a>.
+</p>
+
+<p>2. Склонируйте репозиторий:</p>
+
+<pre><code>git clone https://github.com/antim0118/LuaPlayer-by-YuliaTeam</code></pre>
+
+<p>3. Выполните сборку:</p>
+
+<pre><code>make clean && make</code></pre>
+
+<p>
+В репозитории настроена автосборка EBOOT.PBP при каждом изменении.
+Готовые сборки из актуального кода доступны в
+<a href="https://github.com/antim0118/LuaPlayer-by-YuliaTeam/actions?query=branch%3Amain" target="_blank">
+GitHub Actions
+</a>.
+</p>
+
+<h3>Форк от entitybtw</h3>
+
+
+<p>1. Установите PSPSDK.</p>
+
+<p>2. Склонируйте репозиторий:</p>
+
+<pre><code>git clone https://github.com/entitybtw/LuaPlayerYT-MCSM</code></pre>
+
+<p>3. Запустите сборку:</p>
+
+<pre><code>./build.sh</code></pre>
+
+<p>
+Форк также использует автосборку EBOOT.PBP.
+Актуальные сборки доступны в
+<a href="https://github.com/entitybtw/LuaPlayerYT-MCSM/actions" target="_blank">
+GitHub Actions
+</a>.
+</p>
+</section>
+
+<section id="docs">
+<h2>Документация движка</h2>
+<p>
+LuaPlayerYT 0.5 beta 3 — документация основаная на LuaPlayerYT LLS от ильи' antim0118<br>
+Обновлено: 31 декабря 2025
+</p>
+
+<details id="buttons">
+<summary>buttons — Кнопки</summary>
+<table>
+<tr><th>Имя</th><th>Значение</th></tr>
+<tr><td>buttons.select</td><td>1</td></tr>
+<tr><td>buttons.start</td><td>8</td></tr>
+<tr><td>buttons.up</td><td>16</td></tr>
+<tr><td>buttons.right</td><td>32</td></tr>
+<tr><td>buttons.down</td><td>64</td></tr>
+<tr><td>buttons.left</td><td>128</td></tr>
+<tr><td>buttons.l</td><td>256</td></tr>
+<tr><td>buttons.r</td><td>512</td></tr>
+<tr><td>buttons.triangle</td><td>4096</td></tr>
+<tr><td>buttons.circle</td><td>8192</td></tr>
+<tr><td>buttons.cross</td><td>16384</td></tr>
+<tr><td>buttons.square</td><td>32768</td></tr>
+<tr><td>buttons.home</td><td>65536</td></tr>
+</table>
+<p><code>buttons.read()</code></p>
+<p><code>buttons.Lx()</code></p>
+<p><code>buttons.Ly()</code></p>
+<p><code>buttons.pressed(button)</code></p>
+<p><code>buttons.held(button)</code></p>
+<p><code>buttons.released(button)</code></p>
+</details>
+
+<details id="color">
+<summary>Color — Цвет</summary>
+<p><code>Color.new(r, g, b, a?)</code></p>
+<p><code>Color.get(color, channel?)</code></p>
+</details>
+
+<details id="image">
+<summary>Image — Изображения</summary>
+  <h3>Выравнивание</h3>
+<table>
+<tr><th>Константа</th><th>Значение</th></tr>
+<tr><td>Image.lUp</td><td>0</td></tr>
+<tr><td>Image.rUp</td><td>1</td></tr>
+<tr><td>Image.rDn</td><td>2</td></tr>
+<tr><td>Image.lDn</td><td>3</td></tr>
+<tr><td>Image.Center</td><td>4</td></tr>
+</table>
+  <h3>Функции</h3>
+<p><code>Image.load(path)</code></p>
+<p><code>Image.unload(texture)</code></p>
+<p><code>Image.W(texture)</code></p>
+<p><code>Image.H(texture)</code></p>
+<p><code>Image.draw(...)</code></p>
+<p><code>Image.draweasy(...)</code></p>
+<p><code>Image.drawCircleOnTex(...)</code></p>
+<p><code>Image.createPlaceholder()</code></p>
+</details>
+
+<details id="intrafont">
+<summary>intraFont — Шрифты</summary>
+  <h3>Выравнивание</h3>
+  <p><code>ALIGN_LEFT = 0</code></p>
+  <p><code>ALIGN_CENTER = 512</code></p>
+  <p><code>ALIGN_RIGHT = 1024</code></p>
+  <h3>Скроллинг</h3>
+  <p><code>SCROLL_LEFT = 8192</code></p>
+  <p><code>SCROLL_SEESAW = 8704</code></p>
+  <p><code>SCROLL_RIGHT = 9216</code></p>
+  <p><code>SCROLL_THROUGH = 9728</code></p>
+  <h3>Функции</h3>
+<p><code>intraFont.load(path, size)</code></p>
+<p><code>intraFont.setStyle(...)</code></p>
+<p><code>intraFont.print(...)</code></p>
+<p><code>intraFont.printBackground(...)</code></p>
+<p><code>intraFont.printColumn(...)</code></p>
+<p><code>intraFont.printContoured(...)</code></p>
+<p><code>intraFont.printGradient(...)</code></p>
+<p><code>intraFont.printStriked(...)</code></p>
+<p><code>intraFont.printShadowed(...)</code></p>
+<p><code>intraFont.printUnderlined(...)</code></p>
+<p><code>intraFont.reverseText(text)</code></p>
+<p><code>intraFont.size(font, size)</code></p>
+<p><code>intraFont.textW(font, text, size?)</code></p>
+<p><code>intraFont.textH(font)</code></p>
+<p><code>intraFont.unload(font)</code></p>
+</details>
+
+<details id="system">
+<summary>System — Система</summary>
+<p><code>System.listDir(path?)</code></p>
+<p><code>System.OSK(...)</code></p>
+<p><code>System.message(...)</code></p>
+<p><code>System.getBatteryPercent()</code></p>
+<p><code>System.getCPU()</code></p>
+<p><code>System.SaveData(...)</code></p>
+<p><code>System.USB.activate()</code></p>
+<p><code>System.USB.deactivate()</code></p>
+</details>
+
+<details id="screen">
+<summary>screen - Экран</summary>
+<p><code>screen.clear(color?</code></p>
+<p><code>screen.flip()</code></p>
+<p><code>screen.filledRect(x, y, w, h, color, rotation?, alpha?, align?)</code></p>
+<p><code>screen.drawLine(x1, y1, x2, y2, color)</code></p>
+<p><code>screen.drawCircle(x, y, r, color)</code></p>
+<p><code>screen.drawTriangle(x1, y1, x2, y2, x3, y3, color)</code></p>
+</details>
+  
+<details id="sound">
+<summary>sound - Звук</summary>
+<p><code>sound.cloud(path, channel, loadToRam?)</code></p>
+<p><code>sound.play(channel, loop?)</code></p>
+<p><code>sound.pause(channel)</code></p>
+<p><code>sound.stop(channel)</code></p>
+<p><code>sound.volume(channel, L, R)</code></p>
+<p><code>sound.unload(channel))</code></p>
+<p><code>sound.info() → table</code></p>
+<p><code>sound.state(channel) → table</code></p>
+</details>
+  
+<details id="pmp">
+<summary>pmp - PMP видео</summary>
+<p><code>PMP.play(path, getPointer?, loop?, subtitlePath?, interruptButton?, FPS?) → PMPPointer</code></p>
+<p><code>PMP.getFrame(pointer) → boolean</code></p>
+<p><code>PMP.getTimeCode() → number</code></p>
+<p><code>PMP.getSubs() → string</code></p>
+<p><code>PMP.pause()</code></p>
+<p><code>PMP.stop(pointer)</code></p>
+<p><code>PMP.setVolume(volume)</code></p>
+</details>
+  
+<details id="lua">
+<summary>LUA - Базовые функции</summary>
+<p><code>LUA.print(x, y, text)</code></p>
+<p><code>LUA.getRandom(min, max)</code></p>
+<p><code>LUA.getRAM()</code></p>
+<p><code>LUA.exit() / LUA.quit()</code></p>
+<p><code>LUA.sleep(ms)</code></p>
+</details>
+  
+<details id="timer">
+<summary>timer - Таймеры</summary>
+<p><code>timer.create() → Timer</code></p>
+<p><code>timer.start(timer)</code></p>
+<p><code>timer.time(timer) → number</code></p>
+<p><code>timer.stop(timer)</code></p>
+<p><code>timer.reset(timer)</code></p>
+<p><code>timer.remove(timer)</code></p>
+</details>
+  
+</section>
+
+<section id="additional">
+<h2>Дополнительная информация</h2>
+<h3>Проекты которые делают на LuaPlayerYT:</h3>
+  <p>
+  <a href="https://github.com/entitybtw/mcsm_portable" target="_blank">
+  1. Minecraft: Story Mode [mcsm_portable]
+  </a>
+  </p>
+  <a href="https://t.me/pspdevlogdntrnk" target="_blank">
+  2. Как достать Соседа
+  </a>
+  </p>
+  <p>
+  <a href="https://t.me/volterith_shelter" target="_blank">
+  3. PortableTale
+  </a>
+  </p>
+  <p>
+  <a href="https://t.me/volterith_shelter" target="_blank">
+  4. TouHou: Переполох в Сарае
+  </a>
+  </p>
+  <p>5. Funkin engine</p>
+  <p>6. MikuPSP</p>
+  <p>
+  <a href="http://t.me/atgamedev" target="_blank">
+  7. UltraSimpleGameAPI
+  </a>
+  </p>
+  <p>
+  <a href="https://t.me/devTeam_TeamM" target="_blank">
+  8. PocketDoors
+    </a>
+  </p>
+  <p>
+  <a href="https://t.me/devTeam_TeamM" target="_blank">
+  9. Pocket Rooms
+    </a>
+  <p>
+  <a href="https://t.me/oneshot_psp" target="_blank">
+  10. OneShot PSP
+    </a>
+  </p>
+<h2>LuaPlayerYT LLS для vscode от antim0118</h2>
+  <h3>Установка</h3>
+  <p>1. скачать расширение Lua (или Lua Language Server от sumneko)</p>
+  <p>2. распаковать архив с папкой LLS в удобное место (ССЫЛКА НА СКАЧКУ АРХИВА НАХОДИТСЯ НИЖЕ)</p>
+  <p>3. указать путь к распакованной папке LLS в настройках: File - Preferences - Settings - вкладка User. В поиске пишем Lua.workspace.library и в этом пункте вписываем путь.</p>
+  <h3>Ссылка на ахив текущей версии LuaPlayerYT LLS:</h3>
+  <p>
+  <a href="https://t.me/oneshot_psp" target="_blank">
+  [LLS_v0.5beta3_2025-12-31.zip]
+    </a>
+  13.8KB
+  </p>
+  <h2>Справка</h2>
+  <p>> движок сделан Иваном Kodilo</p>
+  <p>> данный вебсайт сделан entitybtw /
+    <a href="https://github.com/entitybtw/lpyt-docs" target="_blank">
+       исходный код
+      </a>
+      </p>
+  <p>> LuaPlayerYT LLS сделан ильей' antim0118</p>
+  <p>> Основным репозиторием LuaPlayerYT владеет илья' antim0118</p>
+</section>
+</main>
+
+<script>
+const body=document.body
+const toggle=document.getElementById('themeToggle')
+const tabs=document.querySelectorAll('.nav button[data-tab]')
+const sections=document.querySelectorAll('main section')
+const subnav=document.getElementById('docsSubnav')
+
+body.dataset.theme=localStorage.getItem('theme')||'dark'
+
+toggle.onclick=()=>{
+const t=body.dataset.theme==='dark'?'light':'dark'
+body.dataset.theme=t
+localStorage.setItem('theme',t)
+}
+
+function openTab(id){
+tabs.forEach(b=>b.classList.toggle('active',b.dataset.tab===id))
+sections.forEach(s=>s.classList.toggle('active',s.id===id))
+subnav.style.display=id==='docs'?'block':'none'
+location.hash=id
+}
+
+tabs.forEach(b=>b.onclick=()=>openTab(b.dataset.tab))
+
+document.querySelectorAll('.subnav button').forEach(b=>{
+b.onclick=()=>{
+openTab('docs')
+document.querySelectorAll('details').forEach(d=>d.open=false)
+const d=document.getElementById(b.dataset.doc)
+d.open=true
+d.scrollIntoView({behavior:'smooth',block:'start'})
+}
+})
+
+openTab(location.hash.replace('#','')||'intro')
+</script>
+
+</body>
+</html>
