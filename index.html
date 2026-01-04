@@ -308,15 +308,15 @@ LuaPlayerYT 0.5 beta 3 — документация основаная на LuaP
 <p><code>SCROLL_THROUGH = 9728</code></p>
 <h3 data-i18n="docs.functions">Функции</h3>
 <p><code>intraFont.load(path, size)</code></p>
-<p><code>intraFont.setStyle(...)</code></p>
-<p><code>intraFont.print(...)</code></p>
-<p><code>intraFont.printBackground(...)</code></p>
-<p><code>intraFont.printColumn(...)</code></p>
-<p><code>intraFont.printContoured(...)</code></p>
-<p><code>intraFont.printGradient(...)</code></p>
-<p><code>intraFont.printStriked(...)</code></p>
-<p><code>intraFont.printShadowed(...)</code></p>
-<p><code>intraFont.printUnderlined(...)</code></p>
+<p><code>intraFont.setStyle(font, size, color, rotation, align)</code></p>
+<p><code>intraFont.print(x, y, text, textColor, font, size, rotation, GU_LINEAR, align)</code></p>
+<p><code>intraFont.printBackground(x, y, text, textColor, bgColor, font, size)</code></p>
+<p><code>intraFont.printColumn(x, y, text, width, textColor, font, size, align, scroll)</code></p>
+<p><code>intraFont.printContoured(x, y, text, textColor, contourColor, font, size, rotation)</code></p>
+<p><code>intraFont.printGradient(x, y, text, textColorStart, textColorEnd, font, size)</code></p>
+<p><code>intraFont.printStriked(x, y, text, textColor, lineColor, font, size)</code></p>
+<p><code>intraFont.printShadowed(x, y, text, textColor, shadowColor, font, shadowRotation, lightDistance, size, rotation)</code></p>
+<p><code>intraFont.printUnderlined(x, y, text, textColor, lineColor, font, size)</code></p>
 <p><code>intraFont.reverseText(text)</code></p>
 <p><code>intraFont.size(font, size)</code></p>
 <p><code>intraFont.textW(font, text, size?)</code></p>
