@@ -201,9 +201,9 @@ const en = {
       reset: "stop and reset timer (timerInstance - timer object)",
       remove: "remove timer (timerInstance - timer object)"
     },
-  download: {
-    title: "Download Documentation",
-    selectDate: "Select date",
+    download: {
+      title: "Download Documentation",
+      selectDate: "Select date",
     lang: {
       ru: "Russian",
       en: "English"

@@ -201,9 +201,9 @@ const ru = {
       reset: "остановка и сброс таймера (timerInstance - объект таймера)",
       remove: "удаление таймера (timerInstance - объект таймера)"
     },
-  download: {
-    title: "Скачать документацию",
-    selectDate: "Выберите дату",
+    download: {
+      title: "Скачать документацию",
+      selectDate: "Выберите дату",
     lang: {
       ru: "Русский",
       en: "Английский"
