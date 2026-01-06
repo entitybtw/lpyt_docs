@@ -94,6 +94,46 @@ function updateFunctionComments(lang) {
   });
 }
 
+function updateDownloadModalTexts(lang) {
+  if (!i18n[lang]?.download) return;
+  
+  const texts = i18n[lang].download;
+  
+  const modalTitle = document.querySelector('.download-modal-header h3');
+  if (modalTitle && texts.title) {
+    modalTitle.textContent = texts.title;
+  }
+  
+  const offlineTitle = document.querySelector('.download-option:nth-child(1) h4');
+  const onlineTitle = document.querySelector('.download-option:nth-child(2) h4');
+  if (offlineTitle && texts.offline?.title) offlineTitle.textContent = texts.offline.title;
+  if (onlineTitle && texts.online?.title) onlineTitle.textContent = texts.online.title;
+  
+  const offlineDesc = document.querySelector('.download-option:nth-child(1) p');
+  const onlineDesc = document.querySelector('.download-option:nth-child(2) p');
+  if (offlineDesc && texts.offline?.desc) offlineDesc.textContent = texts.offline.desc;
+  if (onlineDesc && texts.online?.desc) onlineDesc.textContent = texts.online.desc;
+  
+  const githubLink = document.querySelector('.github-link span');
+  if (githubLink && texts.online?.link) githubLink.textContent = texts.online.link;
+  
+  const dateSelectOption = document.querySelector('#dateSelect option[value=""]');
+  if (dateSelectOption && texts.selectDate) {
+    dateSelectOption.textContent = texts.selectDate;
+  }
+  
+  const langOptions = document.querySelectorAll('#langSelect option');
+  if (langOptions.length >= 2 && texts.lang) {
+    langOptions[0].textContent = texts.lang.ru;
+    langOptions[1].textContent = texts.lang.en;
+  }
+  
+  const downloadBtnElement = document.getElementById('downloadBtn');
+  if (downloadBtnElement && texts.title) {
+    downloadBtnElement.textContent = texts.title;
+  }
+}
+
 function applyLanguage(lang) {
   if (!i18n[lang]) return;
   currentLang = lang;
@@ -115,6 +155,7 @@ function applyLanguage(lang) {
   }
   document.documentElement.lang = lang;
   updateFunctionComments(lang);
+  updateDownloadModalTexts(lang);
   
   const currentState = getUrlState();
   currentState.lang = lang;
@@ -258,7 +299,7 @@ downloadModal.addEventListener('click', (e) => {
 
 async function loadOfflineDocs() {
   try {
-    const response = await fetch('offline-docs/index.json');
+    const response = await fetch('offline-docs/');
     if (!response.ok) {
       const fallbackResponse = await fetch('offline-docs/manifest.json');
       if (!fallbackResponse.ok) throw new Error('No offline docs found');
@@ -266,8 +307,35 @@ async function loadOfflineDocs() {
       processDocsData(fallbackData);
       return;
     }
-    const data = await response.json();
+    
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href]'));
+    
+    const dates = [];
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href.match(/^\d{2}-\d{2}-\d{2}\/$/)) {
+        const folder = href.replace('/', '');
+        const dateParts = folder.split('-');
+        const displayDate = new Date(`20${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`).toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        dates.push({
+          folder: folder,
+          display: displayDate
+        });
+      }
+    });
+    
+    dates.sort((a, b) => b.folder.localeCompare(a.folder));
+    
+    const data = { dates: dates };
     processDocsData(data);
+    
   } catch (error) {
     console.error('Failed to load offline docs:', error);
     offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${i18n[currentLang]?.download?.offline?.error || 'Оффлайн версии не найдены'}</div>`;
@@ -275,7 +343,7 @@ async function loadOfflineDocs() {
 }
 
 function processDocsData(data) {
-  dateSelect.innerHTML = '<option value="" data-i18n="download.selectDate">Выберите дату</option>';
+  dateSelect.innerHTML = `<option value="" data-i18n="download.selectDate">${i18n[currentLang]?.download?.selectDate || 'Выберите дату'}</option>`;
   
   if (data.dates && Array.isArray(data.dates)) {
     data.dates.forEach(date => {
@@ -295,7 +363,7 @@ function processDocsData(data) {
   }
 }
 
-function updateFilesList() {
+async function updateFilesList() {
   const selectedDate = dateSelect.value;
   const selectedLang = langSelect.value;
   
@@ -304,42 +372,74 @@ function updateFilesList() {
     return;
   }
   
-  offlineFiles.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">Загрузка файлов...</div>';
+  const loadingText = currentLang === 'ru' ? 'Загрузка файлов...' : 'Loading files...';
+  offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${loadingText}</div>`;
   
-  fetch(`offline-docs/${selectedDate}/${selectedLang}/index.json`)
-    .then(response => {
-      if (!response.ok) throw new Error('No files found');
-      return response.json();
-    })
-    .then(files => {
-      offlineFiles.innerHTML = '';
-      if (files && Array.isArray(files) && files.length > 0) {
-        files.forEach(file => {
-          const fileItem = document.createElement('a');
-          fileItem.href = `offline-docs/${selectedDate}/${selectedLang}/${file.name}`;
-          fileItem.className = 'download-file-item';
-          fileItem.download = file.name;
-          
-          const fileName = document.createElement('span');
-          fileName.className = 'download-file-name';
-          fileName.textContent = file.name;
-          
-          const fileSize = document.createElement('span');
-          fileSize.className = 'download-file-size';
-          fileSize.textContent = file.size || '';
-          
-          fileItem.appendChild(fileName);
-          fileItem.appendChild(fileSize);
-          offlineFiles.appendChild(fileItem);
+  try {
+    const response = await fetch(`offline-docs/${selectedDate}/${selectedLang}/`);
+    if (!response.ok) throw new Error('Directory not found');
+    
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href]'));
+    
+    const zipFiles = [];
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      const text = link.textContent.trim();
+      if (href && (href.endsWith('.zip') || href.endsWith('.ZIP'))) {
+        zipFiles.push({
+          name: text || href,
+          href: `offline-docs/${selectedDate}/${selectedLang}/${href}`
         });
-      } else {
-        offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${i18n[currentLang]?.download?.noFiles || 'Файлы не найдены'}</div>`;
       }
-    })
-    .catch(error => {
-      console.error('Failed to load files:', error);
-      offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${i18n[currentLang]?.download?.loadError || 'Ошибка загрузки файлов'}</div>`;
     });
+    
+    offlineFiles.innerHTML = '';
+    
+    if (zipFiles.length > 0) {
+      zipFiles.forEach(file => {
+        const fileItem = document.createElement('a');
+        fileItem.href = file.href;
+        fileItem.className = 'download-file-item';
+        fileItem.download = file.name;
+        
+        const fileName = document.createElement('span');
+        fileName.className = 'download-file-name';
+        fileName.textContent = file.name;
+        
+        const fileSize = document.createElement('span');
+        fileSize.className = 'download-file-size';
+        fileSize.textContent = '...';
+        
+        fetch(file.href, { method: 'HEAD' })
+          .then(headResponse => {
+            const size = headResponse.headers.get('content-length');
+            if (size) {
+              const sizeMB = (size / (1024 * 1024)).toFixed(1);
+              fileSize.textContent = `${sizeMB} MB`;
+            } else {
+              fileSize.textContent = '';
+            }
+          })
+          .catch(() => {
+            fileSize.textContent = '';
+          });
+        
+        fileItem.appendChild(fileName);
+        fileItem.appendChild(fileSize);
+        offlineFiles.appendChild(fileItem);
+      });
+    } else {
+      const noFilesText = i18n[currentLang]?.download?.noFiles || 'Файлы не найдены';
+      offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${noFilesText}</div>`;
+    }
+  } catch (error) {
+    console.error('Failed to load files:', error);
+    const errorText = i18n[currentLang]?.download?.loadError || 'Ошибка загрузки файлов';
+    offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${errorText}</div>`;
+  }
 }
 
 window.addEventListener('resize', () => {
