@@ -15,7 +15,7 @@ const downloadBtn = document.getElementById('downloadBtn')
 const downloadMobileBtn = document.getElementById('downloadMobileBtn')
 const downloadModal = document.getElementById('downloadModal')
 const closeModalBtn = document.querySelector('.download-modal-close')
-const dateSelect = document.getElementById('dateSelect')
+const versionSelect = document.getElementById('versionSelect')
 const langSelect = document.getElementById('langSelect')
 const offlineFiles = document.getElementById('offlineFiles')
 
@@ -131,12 +131,12 @@ async function loadOfflineDocs() {
   try {
     const r = await fetch('offline-docs/manifest.json')
     offlineDocsData = await r.json()
-    dateSelect.innerHTML = `<option value="">${i18n[currentLang].download.selectDate}</option>`
-    offlineDocsData.dates.forEach(d => {
+    versionSelect.innerHTML = `<option value="">${i18n[currentLang].download.selectVersion}</option>`
+    offlineDocsData.versions.forEach(d => {
       const o = document.createElement('option')
       o.value = d.folder
       o.textContent = d.display
-      dateSelect.appendChild(o)
+      versionSelect.appendChild(o)
     })
   } catch {
     offlineFiles.textContent = i18n[currentLang].download.offline.error
@@ -145,13 +145,13 @@ async function loadOfflineDocs() {
 
 function updateFilesList() {
   if (!offlineDocsData) return
-  const d = dateSelect.value
+  const d = versionSelect.value
   const l = langSelect.value
   if (!d) {
-    offlineFiles.textContent = i18n[currentLang].download.selectDatePrompt
+    offlineFiles.textContent = i18n[currentLang].download.selectVersionPrompt
     return
   }
-  const data = offlineDocsData.dates.find(x => x.folder === d)
+  const data = offlineDocsData.versions.find(x => x.folder === d)
   const files = data?.files?.[l]
   offlineFiles.innerHTML = ''
   if (!files || !files.length) {
@@ -187,7 +187,7 @@ downloadModal.addEventListener('click', e => {
   if (e.target === downloadModal) closeDownloadModal()
 })
 
-dateSelect.addEventListener('change', updateFilesList)
+versionSelect.addEventListener('change', updateFilesList)
 langSelect.addEventListener('change', updateFilesList)
 
 window.addEventListener('resize', () => {

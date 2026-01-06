@@ -1,14 +1,14 @@
 {
   "dates": [
     {
-      "folder": "06-01-26",
-      "display": "06-01-26",
+      "folder": "0.4",
+      "display": "0.4",
       "files": {
         "ru": [
-          {"name": "v1.zip", "size": "12.9 KB", "url": "offline-docs/06-01-26/ru/v1.zip"}
+          {"name": "0.4.0.zip", "size": "12.9 KB", "url": "offline-docs/0.4/ru/0.4.0.zip"}
         ],
         "en": [
-          {"name": "v1.zip", "size": "11,2 KB", "url": "offline-docs/06-01-26/en/v1.zip"}
+          {"name": "0.4.0.zip", "size": "11,2 KB", "url": "offline-docs/0.4/en/0.4.0.zip"}
         ]
       }
     }

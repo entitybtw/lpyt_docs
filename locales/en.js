@@ -79,8 +79,8 @@ const en = {
   },
   download: {
     title: "Download Documentation",
-    selectDate: "Select date",
-    selectDatePrompt: "Select date to display files",
+    selectVersion: "Select version",
+    selectVersionPrompt: "Select version to display files",
     noFiles: "Files not found",
     lang: {
       ru: "Russian",
@@ -88,7 +88,7 @@ const en = {
     },
     offline: {
       title: "Offline version",
-      desc: "Select date and language for download:",
+      desc: "Select version and language for download:",
       error: "Offline versions not found",
       noFiles: "Files not found",
       loadError: "Error loading files"
