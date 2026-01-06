@@ -94,6 +94,12 @@ function updateFunctionComments(lang) {
   });
 }
 
+function updateElementText(el, text) {
+  if (el && typeof text === 'string') {
+    el.textContent = text;
+  }
+}
+
 function applyLanguage(lang) {
   if (!i18n[lang]) return;
   currentLang = lang;
@@ -111,13 +117,45 @@ function applyLanguage(lang) {
   });
   
   const langText = i18n[lang].langToggle;
-  langToggle.textContent = langText;
+  updateElementText(langToggle, langText);
   if (mobileLangToggle) {
     mobileLangToggle.textContent = lang === 'ru' ? 'ru' : 'en';
   }
   
   document.documentElement.lang = lang;
   updateFunctionComments(lang);
+  
+  const downloadTexts = i18n[lang]?.download;
+  if (downloadTexts) {
+    updateElementText(downloadBtn, downloadTexts.title);
+    
+    const modalTitle = document.querySelector('.download-modal-header h3');
+    updateElementText(modalTitle, downloadTexts.title);
+    
+    const offlineTitle = document.querySelector('.download-option:nth-child(1) h4');
+    updateElementText(offlineTitle, downloadTexts.offline?.title);
+    
+    const onlineTitle = document.querySelector('.download-option:nth-child(2) h4');
+    updateElementText(onlineTitle, downloadTexts.online?.title);
+    
+    const offlineDesc = document.querySelector('.download-option:nth-child(1) p');
+    updateElementText(offlineDesc, downloadTexts.offline?.desc);
+    
+    const onlineDesc = document.querySelector('.download-option:nth-child(2) p');
+    updateElementText(onlineDesc, downloadTexts.online?.desc);
+    
+    const githubLink = document.querySelector('.github-link span');
+    updateElementText(githubLink, downloadTexts.online?.link);
+    
+    const dateSelectOption = document.querySelector('#dateSelect option[value=""]');
+    updateElementText(dateSelectOption, downloadTexts.selectDate);
+    
+    const langOptions = document.querySelectorAll('#langSelect option');
+    if (langOptions.length >= 2 && downloadTexts.lang) {
+      updateElementText(langOptions[0], downloadTexts.lang.ru);
+      updateElementText(langOptions[1], downloadTexts.lang.en);
+    }
+  }
   
   const currentState = getUrlState();
   currentState.lang = lang;
