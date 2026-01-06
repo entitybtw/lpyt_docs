@@ -1,417 +1,217 @@
-const body = document.body;
-const toggle = document.getElementById('themeToggle');
-const langToggle = document.getElementById('langToggle');
-const tabs = document.querySelectorAll('.nav button[data-tab]');
-const sections = document.querySelectorAll('main section');
-const subnav = document.getElementById('docsSubnav');
+const body = document.body
+const toggle = document.getElementById('themeToggle')
+const langToggle = document.getElementById('langToggle')
+const tabs = document.querySelectorAll('.nav button[data-tab]')
+const sections = document.querySelectorAll('main section')
+const subnav = document.getElementById('docsSubnav')
 
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-const mobileOverlay = document.getElementById('mobileOverlay');
-const sidebar = document.getElementById('sidebar');
-const mobileThemeToggle = document.getElementById('mobileThemeToggle');
-const mobileLangToggle = document.getElementById('mobileLangToggle');
-const downloadBtn = document.getElementById('downloadBtn');
-const downloadMobileBtn = document.getElementById('downloadMobileBtn');
-const downloadModal = document.getElementById('downloadModal');
-const dateSelect = document.getElementById('dateSelect');
-const langSelect = document.getElementById('langSelect');
-const offlineFiles = document.getElementById('offlineFiles');
-const closeModalBtn = document.querySelector('.download-modal-close');
+const mobileMenuToggle = document.getElementById('mobileMenuToggle')
+const mobileOverlay = document.getElementById('mobileOverlay')
+const sidebar = document.getElementById('sidebar')
+const mobileThemeToggle = document.getElementById('mobileThemeToggle')
+const mobileLangToggle = document.getElementById('mobileLangToggle')
 
-function getUrlState() {
-    const hash = window.location.hash.replace('#', '');
-    const params = hash.split('/');
-    const state = {};
-    
-    params.forEach(param => {
-        if (param === 'light' || param === 'dark') {
-            state.theme = param;
-        } else if (param === 'ru' || param === 'en') {
-            state.lang = param;
-        } else if (param && param !== '#') {
-            state.tab = param;
-        }
-    });
-    
-    return state;
+const downloadBtn = document.getElementById('downloadBtn')
+const downloadMobileBtn = document.getElementById('downloadMobileBtn')
+const downloadModal = document.getElementById('downloadModal')
+const closeModalBtn = document.querySelector('.download-modal-close')
+const dateSelect = document.getElementById('dateSelect')
+const langSelect = document.getElementById('langSelect')
+const offlineFiles = document.getElementById('offlineFiles')
+
+let currentLang = 'ru'
+let i18n = {}
+let offlineDocsData = null
+
+function parseHash() {
+  const parts = location.hash.replace('#', '').split('/').filter(Boolean)
+  const state = {}
+  parts.forEach(p => {
+    if (p === 'dark' || p === 'light') state.theme = p
+    else if (p === 'ru' || p === 'en') state.lang = p
+    else state.tab = p
+  })
+  return state
 }
 
-function updateUrl(state) {
-    const parts = [];
-    
-    if (state.tab) parts.push(state.tab);
-    if (state.theme) parts.push(state.theme);
-    if (state.lang) parts.push(state.lang);
-    
-    const newHash = parts.length > 0 ? '#' + parts.join('/') : '#intro';
-    if (window.location.hash !== newHash) {
-        window.location.hash = newHash;
-    }
+function updateHash(state) {
+  const parts = []
+  if (state.tab) parts.push(state.tab)
+  if (state.theme) parts.push(state.theme)
+  if (state.lang) parts.push(state.lang)
+  const h = '#' + parts.join('/')
+  if (location.hash !== h) location.hash = h
 }
 
 async function loadTranslations(lang) {
-  try {
-    const response = await fetch(`locales/${lang}.js`);
-    const scriptContent = await response.text();
-    const script = document.createElement('script');
-    script.textContent = scriptContent;
-    document.head.appendChild(script);
-    document.head.removeChild(script);
-    return window.i18n[lang];
-  } catch (error) {
-    console.error(`Failed to load ${lang} translation:`, error);
-    const backup = localStorage.getItem(`i18n_${lang}`);
-    if (backup) return JSON.parse(backup);
-    const fallbackLang = lang === 'ru' ? 'en' : 'ru';
-    return await loadTranslations(fallbackLang);
-  }
+  const r = await fetch(`locales/${lang}.js`)
+  const t = await r.text()
+  const s = document.createElement('script')
+  s.textContent = t
+  document.head.appendChild(s)
+  document.head.removeChild(s)
+  return window.i18n[lang]
 }
 
-let currentLang = localStorage.getItem('lang') || 'ru';
-let i18n = {};
+function applyLanguage(lang, skipHash) {
+  if (!i18n[lang]) return
+  currentLang = lang
+  localStorage.setItem('lang', lang)
 
-function updateFunctionComments(lang) {
-  if (!i18n[lang]?.comments) return;
-  const comments = i18n[lang].comments;
-  Object.keys(comments).forEach(sectionId => {
-    const sectionComments = comments[sectionId];
-    Object.keys(sectionComments).forEach(funcName => {
-      const commentText = sectionComments[funcName];
-      if (commentText) {
-        const paragraphs = document.querySelectorAll(`#${sectionId} p`);
-        paragraphs.forEach(p => {
-          const text = p.textContent.trim();
-          if (text.includes(`${funcName}(`)) {
-            const codeElement = p.querySelector('code');
-            if (codeElement) {
-              const funcCall = codeElement.textContent;
-              p.innerHTML = `<code>${funcCall}</code> <span style="color:var(--muted);font-size:14px">${commentText}</span>`;
-            }
-          }
-        });
-      }
-    });
-  });
-}
-
-function updateElementText(el, text) {
-  if (el && typeof text === 'string') {
-    el.textContent = text;
-  }
-}
-
-function applyLanguage(lang) {
-  if (!i18n[lang]) return;
-  currentLang = lang;
-  localStorage.setItem('lang', lang);
-  
   document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const keys = key.split('.');
-    let text = i18n[lang];
-    for (const k of keys) {
-      if (text?.[k] !== undefined) text = text[k];
-      else { text = key; break; }
+    const path = el.dataset.i18n.split('.')
+    let v = i18n[lang]
+    for (const k of path) {
+      if (v?.[k] !== undefined) v = v[k]
+      else return
     }
-    if (typeof text === 'string') el.textContent = text;
-  });
-  
-  const langText = i18n[lang].langToggle;
-  updateElementText(langToggle, langText);
-  if (mobileLangToggle) {
-    mobileLangToggle.textContent = lang === 'ru' ? 'ru' : 'en';
+    if (typeof v === 'string') el.textContent = v
+  })
+
+  document.documentElement.lang = lang
+  if (mobileLangToggle) mobileLangToggle.textContent = lang
+
+  if (!skipHash) {
+    const st = parseHash()
+    st.lang = lang
+    updateHash(st)
   }
-  
-  document.documentElement.lang = lang;
-  updateFunctionComments(lang);
-  
-  const downloadTexts = i18n[lang]?.download;
-  if (downloadTexts) {
-    updateElementText(downloadBtn, downloadTexts.title);
-    
-    const modalTitle = document.querySelector('.download-modal-header h3');
-    updateElementText(modalTitle, downloadTexts.title);
-    
-    const offlineTitle = document.querySelector('.download-option:nth-child(1) h4');
-    updateElementText(offlineTitle, downloadTexts.offline?.title);
-    
-    const onlineTitle = document.querySelector('.download-option:nth-child(2) h4');
-    updateElementText(onlineTitle, downloadTexts.online?.title);
-    
-    const offlineDesc = document.querySelector('.download-option:nth-child(1) p');
-    updateElementText(offlineDesc, downloadTexts.offline?.desc);
-    
-    const onlineDesc = document.querySelector('.download-option:nth-child(2) p');
-    updateElementText(onlineDesc, downloadTexts.online?.desc);
-    
-    const githubLink = document.querySelector('.github-link span');
-    updateElementText(githubLink, downloadTexts.online?.link);
-    
-    const dateSelectOption = document.querySelector('#dateSelect option[value=""]');
-    updateElementText(dateSelectOption, downloadTexts.selectDate);
-    
-    const langOptions = document.querySelectorAll('#langSelect option');
-    if (langOptions.length >= 2 && downloadTexts.lang) {
-      updateElementText(langOptions[0], downloadTexts.lang.ru);
-      updateElementText(langOptions[1], downloadTexts.lang.en);
-    }
+}
+
+function setTheme(theme, skipHash) {
+  body.dataset.theme = theme
+  localStorage.setItem('theme', theme)
+  toggle.textContent = theme === 'dark' ? '🌙 / ☀️' : '☀️ / 🌙'
+  if (mobileThemeToggle) mobileThemeToggle.textContent = theme === 'dark' ? '🌙' : '☀️'
+  if (!skipHash) {
+    const st = parseHash()
+    st.theme = theme
+    updateHash(st)
   }
-  
-  const currentState = getUrlState();
-  currentState.lang = lang;
-  updateUrl(currentState);
 }
 
 async function initTranslations() {
-  const [ruTranslations, enTranslations] = await Promise.all([
-    loadTranslations('ru'),
-    loadTranslations('en')
-  ]);
-  i18n = { ru: ruTranslations, en: enTranslations };
-  localStorage.setItem('i18n_ru', JSON.stringify(ruTranslations));
-  localStorage.setItem('i18n_en', JSON.stringify(enTranslations));
-  
-  const urlState = getUrlState();
-  
-  const theme = urlState.theme || localStorage.getItem('theme') || 'dark';
-  body.dataset.theme = theme;
-  updateThemeButtons(theme);
-  
-  const lang = urlState.lang || localStorage.getItem('lang') || 'ru';
-  applyLanguage(lang);
-  
-  openTab(urlState.tab || 'intro');
+  const [ru, en] = await Promise.all([loadTranslations('ru'), loadTranslations('en')])
+  i18n = { ru, en }
 }
 
-function updateThemeButtons(theme) {
-  const isDark = theme === 'dark';
-  toggle.textContent = isDark ? '🌙 / ☀️' : '☀️ / 🌙';
-  if (mobileThemeToggle) {
-    mobileThemeToggle.textContent = isDark ? '🌙' : '☀️';
+function openTab(id, skipHash) {
+  tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === id))
+  sections.forEach(s => s.classList.toggle('active', s.id === id))
+  subnav.style.display = id === 'docs' ? 'block' : 'none'
+  if (!skipHash) {
+    const st = parseHash()
+    st.tab = id
+    updateHash(st)
   }
+}
+
+function toggleTheme() {
+  setTheme(body.dataset.theme === 'dark' ? 'light' : 'dark')
 }
 
 function toggleMobileMenu() {
-  const isVisible = sidebar.classList.toggle('mobile-visible');
-  if (mobileOverlay) {
-    mobileOverlay.classList.toggle('visible', isVisible);
-  }
-  body.style.overflow = isVisible ? 'hidden' : '';
+  const v = sidebar.classList.toggle('mobile-visible')
+  if (mobileOverlay) mobileOverlay.classList.toggle('visible', v)
+  body.style.overflow = v ? 'hidden' : ''
 }
-
-if (mobileMenuToggle) {
-  mobileMenuToggle.addEventListener('click', toggleMobileMenu);
-}
-
-if (mobileOverlay) {
-  mobileOverlay.addEventListener('click', toggleMobileMenu);
-}
-
-document.querySelectorAll('.nav button, .subnav button').forEach(button => {
-  button.addEventListener('click', () => {
-    if (window.innerWidth <= 768) {
-      toggleMobileMenu();
-    }
-  });
-});
-
-function toggleTheme() {
-  const newTheme = body.dataset.theme === 'dark' ? 'light' : 'dark';
-  body.dataset.theme = newTheme;
-  localStorage.setItem('theme', newTheme);
-  updateThemeButtons(newTheme);
-  
-  const currentState = getUrlState();
-  currentState.theme = newTheme;
-  updateUrl(currentState);
-}
-
-if (mobileThemeToggle) {
-  mobileThemeToggle.addEventListener('click', toggleTheme);
-}
-
-toggle.addEventListener('click', toggleTheme);
-
-if (mobileLangToggle) {
-  mobileLangToggle.addEventListener('click', () => {
-    applyLanguage(currentLang === 'ru' ? 'en' : 'ru');
-  });
-}
-
-langToggle.addEventListener('click', () => {
-  applyLanguage(currentLang === 'ru' ? 'en' : 'ru');
-});
-
-function openTab(id) {
-  tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
-  sections.forEach(s => s.classList.toggle('active', s.id === id));
-  subnav.style.display = id === 'docs' ? 'block' : 'none';
-  
-  const currentState = getUrlState();
-  currentState.tab = id;
-  updateUrl(currentState);
-}
-
-tabs.forEach(b => {
-  b.addEventListener('click', () => openTab(b.dataset.tab));
-});
-
-document.querySelectorAll('.subnav button').forEach(b => {
-  b.addEventListener('click', () => {
-    openTab('docs');
-    document.querySelectorAll('details').forEach(d => d.open = false);
-    const d = document.getElementById(b.dataset.doc);
-    if (d) {
-      d.open = true;
-      d.scrollIntoView({behavior: 'smooth', block: 'start'});
-    }
-  });
-});
-
-let offlineDocsData = null;
 
 function openDownloadModal() {
-  downloadModal.classList.add('active');
-  body.style.overflow = 'hidden';
-  loadOfflineDocs();
+  downloadModal.classList.add('active')
+  body.style.overflow = 'hidden'
+  loadOfflineDocs()
 }
 
 function closeDownloadModal() {
-  downloadModal.classList.remove('active');
-  body.style.overflow = '';
+  downloadModal.classList.remove('active')
+  body.style.overflow = ''
 }
-
-if (downloadBtn) {
-  downloadBtn.addEventListener('click', openDownloadModal);
-}
-
-if (downloadMobileBtn) {
-  downloadMobileBtn.addEventListener('click', openDownloadModal);
-}
-
-if (closeModalBtn) {
-  closeModalBtn.addEventListener('click', closeDownloadModal);
-}
-
-downloadModal.addEventListener('click', (e) => {
-  if (e.target === downloadModal) {
-    closeDownloadModal();
-  }
-});
 
 async function loadOfflineDocs() {
   try {
-    const response = await fetch('offline-docs/manifest.json');
-    if (!response.ok) throw new Error('Manifest not found');
-    
-    offlineDocsData = await response.json();
-    
-    const selectDateText = i18n[currentLang]?.download?.selectDate || 'Выберите дату';
-    dateSelect.innerHTML = `<option value="">${selectDateText}</option>`;
-    
-    if (offlineDocsData.dates && offlineDocsData.dates.length > 0) {
-      offlineDocsData.dates.forEach(date => {
-        const option = document.createElement('option');
-        option.value = date.folder;
-        option.textContent = date.display;
-        dateSelect.appendChild(option);
-      });
-      
-      dateSelect.value = offlineDocsData.dates[0].folder;
-      updateFilesList();
-    } else {
-      const errorText = i18n[currentLang]?.download?.offline?.error || 'Оффлайн версии не найдены';
-      offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${errorText}</div>`;
-    }
-  } catch (error) {
-    console.error('Failed to load offline docs:', error);
-    const errorText = i18n[currentLang]?.download?.offline?.error || 'Оффлайн версии не найдены';
-    offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${errorText}</div>`;
+    const r = await fetch('offline-docs/manifest.json')
+    offlineDocsData = await r.json()
+    dateSelect.innerHTML = `<option value="">${i18n[currentLang].download.selectDate}</option>`
+    offlineDocsData.dates.forEach(d => {
+      const o = document.createElement('option')
+      o.value = d.folder
+      o.textContent = d.display
+      dateSelect.appendChild(o)
+    })
+  } catch {
+    offlineFiles.textContent = i18n[currentLang].download.offline.error
   }
 }
 
 function updateFilesList() {
-  if (!offlineDocsData) return;
-  
-  const selectedDate = dateSelect.value;
-  const selectedLang = langSelect.value;
-  
-  if (!selectedDate) {
-    const promptText = i18n[currentLang]?.download?.selectDatePrompt || 'Выберите дату';
-    offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${promptText}</div>`;
-    return;
+  if (!offlineDocsData) return
+  const d = dateSelect.value
+  const l = langSelect.value
+  if (!d) {
+    offlineFiles.textContent = i18n[currentLang].download.selectDatePrompt
+    return
   }
-  
-  const dateData = offlineDocsData.dates.find(d => d.folder === selectedDate);
-  if (!dateData || !dateData.files || !dateData.files[selectedLang]) {
-    const noFilesText = i18n[currentLang]?.download?.noFiles || 'Файлы не найдены';
-    offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${noFilesText}</div>`;
-    return;
+  const data = offlineDocsData.dates.find(x => x.folder === d)
+  const files = data?.files?.[l]
+  offlineFiles.innerHTML = ''
+  if (!files || !files.length) {
+    offlineFiles.textContent = i18n[currentLang].download.noFiles
+    return
   }
-  
-  const files = dateData.files[selectedLang];
-  offlineFiles.innerHTML = '';
-  
-  if (files.length > 0) {
-    files.forEach(file => {
-      const fileItem = document.createElement('a');
-      fileItem.href = file.url;
-      fileItem.className = 'download-file-item';
-      fileItem.download = file.name;
-      
-      const fileName = document.createElement('span');
-      fileName.className = 'download-file-name';
-      fileName.textContent = file.name;
-      
-      const fileSize = document.createElement('span');
-      fileSize.className = 'download-file-size';
-      fileSize.textContent = file.size || '';
-      
-      fileItem.appendChild(fileName);
-      fileItem.appendChild(fileSize);
-      offlineFiles.appendChild(fileItem);
-    });
-  } else {
-    const noFilesText = i18n[currentLang]?.download?.noFiles || 'Файлы не найдены';
-    offlineFiles.innerHTML = `<div style="color: var(--muted); text-align: center; padding: 20px;">${noFilesText}</div>`;
-  }
+  files.forEach(f => {
+    const a = document.createElement('a')
+    a.href = f.url
+    a.download = f.name
+    a.className = 'download-file-item'
+    a.innerHTML = `<span>${f.name}</span><span>${f.size || ''}</span>`
+    offlineFiles.appendChild(a)
+  })
 }
 
-dateSelect.addEventListener('change', updateFilesList);
-langSelect.addEventListener('change', updateFilesList);
+toggle.addEventListener('click', toggleTheme)
+if (mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme)
+
+langToggle.addEventListener('click', () => applyLanguage(currentLang === 'ru' ? 'en' : 'ru'))
+if (mobileLangToggle) mobileLangToggle.addEventListener('click', () => applyLanguage(currentLang === 'ru' ? 'en' : 'ru'))
+
+tabs.forEach(b => b.addEventListener('click', () => openTab(b.dataset.tab)))
+
+if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', toggleMobileMenu)
+if (mobileOverlay) mobileOverlay.addEventListener('click', toggleMobileMenu)
+
+if (downloadBtn) downloadBtn.addEventListener('click', openDownloadModal)
+if (downloadMobileBtn) downloadMobileBtn.addEventListener('click', openDownloadModal)
+if (closeModalBtn) closeModalBtn.addEventListener('click', closeDownloadModal)
+
+downloadModal.addEventListener('click', e => {
+  if (e.target === downloadModal) closeDownloadModal()
+})
+
+dateSelect.addEventListener('change', updateFilesList)
+langSelect.addEventListener('change', updateFilesList)
 
 window.addEventListener('resize', () => {
-  if (window.innerWidth > 768 && sidebar.classList.contains('mobile-visible')) {
-    sidebar.classList.remove('mobile-visible');
-    if (mobileOverlay) mobileOverlay.classList.remove('visible');
-    body.style.overflow = '';
+  if (window.innerWidth > 768) {
+    sidebar.classList.remove('mobile-visible')
+    if (mobileOverlay) mobileOverlay.classList.remove('visible')
+    body.style.overflow = ''
   }
-});
+})
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && downloadModal.classList.contains('active')) {
-    closeDownloadModal();
-  }
-});
-
-initTranslations();
+initTranslations().then(() => {
+  const st = parseHash()
+  const theme = st.theme || localStorage.getItem('theme') || 'dark'
+  const lang = st.lang || localStorage.getItem('lang') || 'ru'
+  const tab = st.tab || 'intro'
+  setTheme(theme, true)
+  applyLanguage(lang, true)
+  openTab(tab, true)
+  updateHash({ tab, theme, lang })
+})
 
 window.addEventListener('hashchange', () => {
-  const urlState = getUrlState();
-  
-  if (urlState.theme && urlState.theme !== body.dataset.theme) {
-    body.dataset.theme = urlState.theme;
-    localStorage.setItem('theme', urlState.theme);
-    updateThemeButtons(urlState.theme);
-  }
-  
-  if (urlState.lang && urlState.lang !== currentLang) {
-    applyLanguage(urlState.lang);
-  }
-  
-  if (urlState.tab) {
-    openTab(urlState.tab);
-  } else {
-    openTab('intro');
-  }
-});
+  const st = parseHash()
+  if (st.theme && st.theme !== body.dataset.theme) setTheme(st.theme, true)
+  if (st.lang && st.lang !== currentLang) applyLanguage(st.lang, true)
+  if (st.tab) openTab(st.tab, true)
+})
