@@ -77,6 +77,28 @@ const en = {
     credit4: "> Main LuaPlayerYT repository owned by илья' antim0118",
     credit5: "> Thanks to cxplay_1465 for helping with comments for the engine documentation."
   },
+  download: {
+    title: "Download Documentation",
+    selectDate: "Select date",
+    selectDatePrompt: "Select date to display files",
+    noFiles: "Files not found",
+    lang: {
+      ru: "Russian",
+      en: "English"
+    },
+    offline: {
+      title: "Offline version",
+      desc: "Select date and language for download:",
+      error: "Offline versions not found",
+      noFiles: "Files not found",
+      loadError: "Error loading files"
+    },
+    online: {
+      title: "GitHub repository",
+      desc: "Latest version of documentation:",
+      link: "github.com/entitybtw/lpyt-docs"
+    }
+  },
   themeToggle: "🌙 / ☀️",
   langToggle: "en / ru",
   comments: {
@@ -200,28 +222,7 @@ const en = {
       stop: "stop timer (timerInstance - timer object)",
       reset: "stop and reset timer (timerInstance - timer object)",
       remove: "remove timer (timerInstance - timer object)"
-    },
-    download: {
-      title: "Download Documentation",
-      selectDate: "Select date",
-    lang: {
-      ru: "Russian",
-      en: "English"
-    },
-    offline: {
-      title: "Offline version",
-      desc: "Select date and language for download:",
-      error: "Offline versions not found",
-      noFiles: "Files not found",
-      loadError: "Error loading files"
-    },
-    online: {
-      title: "GitHub repository",
-      desc: "Latest version of documentation:",
-      link: "github.com/entitybtw/lpyt-docs"
-    },
-    selectDatePrompt: "Select date to display files"
-  }
+    }
   }
 };
 
