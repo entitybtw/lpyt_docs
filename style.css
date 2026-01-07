@@ -377,6 +377,7 @@ th{background:var(--bg)}
 .back-button:hover {
   transform: translateY(-3px);
   border-color: var(--accent);
+  text-decoration: none;
 }
 
 @media (max-width:768px){
