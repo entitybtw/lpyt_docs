@@ -3,6 +3,7 @@ const toggle = document.getElementById('themeToggle')
 const langToggle = document.getElementById('langToggle')
 const tabs = document.querySelectorAll('.nav button[data-tab]')
 const sections = document.querySelectorAll('main section')
+const subnavButtons = document.querySelectorAll('.subnav button[data-tab]')
 const subnav = document.getElementById('docsSubnav')
 const mobileMenuToggle = document.getElementById('mobileMenuToggle')
 const mobileOverlay = document.getElementById('mobileOverlay')
@@ -120,6 +121,13 @@ function openTab(id, skipHash) {
     updateHash(st)
   }
 }
+subnavButtons.forEach(b =>
+  b.addEventListener('click', () => {
+    openTab(b.dataset.tab)
+    if (window.innerWidth <= 768) toggleMobileMenu()
+  })
+)
+
 
 function toggleTheme() {
   setTheme(body.dataset.theme === 'dark' ? 'light' : 'dark')
