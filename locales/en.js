@@ -69,6 +69,7 @@ const en = {
     step1: "1. Install Lua extension (or sumneko Lua Language Server)",
     step2: "2. Extract LLS folder archive to convenient location (DOWNLOAD LINK BELOW)",
     step3: "3. Set path to extracted LLS folder in settings: File → Preferences → Settings → User tab. Search Lua.workspace.library and enter the path.",
+    step4: "4. Done :D",
     link: "Link to current LuaPlayerYT LLS archive:",
     credits: "Credits",
     credit1: "> Engine made by Ivan Kodilo",

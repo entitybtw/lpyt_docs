@@ -69,6 +69,7 @@ const ru = {
     step1: "1. скачать расширение Lua (или Lua Language Server от sumneko)",
     step2: "2. распаковать архив с папкой LLS в удобное место (ССЫЛКА НА СКАЧКУ АРХИВА НАХОДИТСЯ НИЖЕ)",
     step3: "3. указать путь к распакованной папке LLS в настройках: File - Preferences - Settings - вкладка User. В поиске пишем Lua.workspace.library и в этом пункте вписываем путь.",
+    step4: "4. Готово :D",
     link: "Ссылка на архив текущей версии LuaPlayerYT LLS:",
     credits: "Справка",
     credit1: "> движок сделан Иваном Kodilo",
