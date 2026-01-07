@@ -99,6 +99,7 @@ const en = {
       link: "github.com/entitybtw/lpyt-docs"
     }
   },
+  selector: 'Back to selector',
   themeToggle: "🌙 / ☀️",
   langToggle: "en / ru",
   comments: {
