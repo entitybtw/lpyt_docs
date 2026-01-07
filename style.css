@@ -358,6 +358,26 @@ th{background:var(--bg)}
     text-decoration: none;
 }
 
+.back-button {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  background-color: var(--accent);
+  color: var(--panel);
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.back-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
 @media (max-width:768px){
 body{flex-direction:column}
 .mobile-header{display:flex}
@@ -410,6 +430,10 @@ table{display:block;overflow-x:auto}
 .download-select-group {
     flex-direction: column;
 }
+.back-button {
+  left: 12px;
+  bottom: 12px;
+}
 }
 @media (max-width:480px){
 .mobile-header{padding:10px}
@@ -427,22 +451,7 @@ details{padding:12px}
     padding: 16px;
 }
 .back-button {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  background-color: #2a2a2a;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 14px;
-  z-index: 9999;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  transition: background 0.2s, transform 0.2s;
-}
-
-.back-button:hover {
-  background-color: #3a3a3a;
-  transform: translateY(-2px);
+  left: 8px;
+  bottom: 8px;
 }
 }
