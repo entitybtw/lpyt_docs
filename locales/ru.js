@@ -5,6 +5,7 @@ const ru = {
     build: "Сборка",
     docs: "Документация движка",
     additional: "Дополнительная информация",
+    credits: "Справка",
     buttons: "buttons — Кнопки",
     color: "Color — Цвет",
     image: "Image — Изображения",
@@ -14,8 +15,7 @@ const ru = {
     sound: "sound — Звук",
     pmp: "pmp — PMP видео",
     lua: "LUA — Базовые функции",
-    timer: "timer — Таймеры",
-    credits: "Справка"
+    timer: "timer — Таймеры"
   },
   intro: {
     title: "Основная информация",

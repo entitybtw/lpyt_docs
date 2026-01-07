@@ -5,6 +5,7 @@ const en = {
     build: "Build",
     docs: "Engine Documentation",
     additional: "Additional Information",
+    credits: "Credits",
     buttons: "buttons",
     color: "Color",
     image: "Image",
@@ -14,8 +15,7 @@ const en = {
     sound: "sound",
     pmp: "PMP",
     lua: "LUA",
-    timer: "timer",
-    credits: "Credits"
+    timer: "timer"
   },
   intro: {
     title: "General Information",
