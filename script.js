@@ -3,7 +3,6 @@ const toggle = document.getElementById('themeToggle')
 const langToggle = document.getElementById('langToggle')
 const tabs = document.querySelectorAll('.nav button[data-tab]')
 const sections = document.querySelectorAll('main section')
-const subnavButtons = document.querySelectorAll('.subnav button[data-doc]')
 const subnav = document.getElementById('docsSubnav')
 const mobileMenuToggle = document.getElementById('mobileMenuToggle')
 const mobileOverlay = document.getElementById('mobileOverlay')
@@ -121,14 +120,19 @@ function openTab(id, skipHash) {
     updateHash(st)
   }
 }
-subnavButtons.forEach(b =>
+
+document.querySelectorAll('.subnav button').forEach(b => {
   b.addEventListener('click', () => {
     openTab('docs')
-    const target = document.getElementById(b.dataset.doc)
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    document.querySelectorAll('#docs details').forEach(d => d.open = false)
+    const d = document.getElementById(b.dataset.doc)
+    if (d) {
+      d.open = true
+      d.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
     if (window.innerWidth <= 768) toggleMobileMenu()
   })
-)
+})
 
 
 function toggleTheme() {
